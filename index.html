@@ -308,6 +308,13 @@ input[type=date]:focus,select.sel:focus{outline:none;border-color:#1a3aff}
     </div>
   </div>
   <div class="sset">
+    <h3>📧 Mon adresse email</h3>
+    <p style="font-size:12px;color:#64748b;line-height:1.7;margin-bottom:10px">Saisissez votre adresse email pour recevoir les rapports DLC.</p>
+    <input type="email" class="sheet-inp" id="user-email" placeholder="votre@email.com" style="margin-bottom:8px">
+    <button class="btn btn-p" onclick="saveEmail()" style="margin-top:0">💾 Enregistrer mon email</button>
+    <button class="btn btn-s" onclick="sendReport()" style="margin-top:8px">📤 Envoyer le rapport DLC maintenant</button>
+  </div>
+  <div class="sset">
     <h3>Gestion des magasins</h3>
     <div id="stores-list"></div>
     <button class="btn btn-p" style="margin-top:10px" onclick="openSheet('add')">+ Ajouter un magasin</button>
@@ -887,7 +894,105 @@ function importData(event){
   reader.readAsText(file);
 }
 
-window.onload=init;
+function saveEmail(){
+  var email = document.getElementById('user-email').value.trim();
+  if(!email){ showToast('Saisissez une adresse email'); return; }
+  if(!email.includes('@')){ showToast('Adresse email invalide'); return; }
+  try { localStorage.setItem('dlc_email', email); } catch(e){}
+  showToast('Email enregistre : ' + email);
+}
+
+function loadEmail(){
+  try {
+    var email = localStorage.getItem('dlc_email') || '';
+    var el = document.getElementById('user-email');
+    if(el) el.value = email;
+  } catch(e){}
+}
+
+function sendReport(){
+  var email = '';
+  try { email = localStorage.getItem('dlc_email') || ''; } catch(e){}
+  if(!email){ showToast('Enregistrez votre email dans les Reglages'); goTo('cfg'); return; }
+
+  var today = new Date();
+  var dateStr = today.getDate().toString().padStart(2,'0') + '/' + (today.getMonth()+1).toString().padStart(2,'0') + '/' + today.getFullYear();
+
+  // Trier les DLC urgentes
+  var jourJ = entries.filter(function(e){ return aCls(daysLeft(e.dlc))==='cr'; }).sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); });
+  var trois = entries.filter(function(e){ return aCls(daysLeft(e.dlc))==='co'; }).sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); });
+  var cinq  = entries.filter(function(e){ return aCls(daysLeft(e.dlc))==='cv'; }).sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); });
+
+  if(!jourJ.length && !trois.length && !cinq.length){
+    showToast('Aucune DLC urgente a signaler !');
+    return;
+  }
+
+  // Construire le corps HTML du mail
+  var body = '<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">';
+  body += '<h2 style="background:#1e3a6e;color:white;padding:16px;margin:0">Rapport DLC — ' + dateStr + '</h2>';
+
+  if(jourJ.length){
+    body += '<h3 style="color:#dc2626;padding:10px 16px;margin:0;background:#fef2f2">🔴 Jour J — ' + jourJ.length + ' produit(s)</h3>';
+    body += '<table style="width:100%;border-collapse:collapse">';
+    body += '<tr style="background:#fee2e2"><th style="padding:8px;text-align:left">Produit</th><th style="padding:8px">Magasin</th><th style="padding:8px">DLC</th></tr>';
+    jourJ.forEach(function(e){
+      body += '<tr style="border-bottom:1px solid #fecaca"><td style="padding:8px">'+e.name+'</td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center;color:#dc2626;font-weight:bold">'+fmtDate(e.dlc)+'</td></tr>';
+    });
+    body += '</table>';
+  }
+
+  if(trois.length){
+    body += '<h3 style="color:#f97316;padding:10px 16px;margin:0;background:#fff7ed">🟠 3 jours ou moins — ' + trois.length + ' produit(s)</h3>';
+    body += '<table style="width:100%;border-collapse:collapse">';
+    body += '<tr style="background:#ffedd5"><th style="padding:8px;text-align:left">Produit</th><th style="padding:8px">Magasin</th><th style="padding:8px">DLC</th><th style="padding:8px">Jours restants</th></tr>';
+    trois.forEach(function(e){
+      var d = daysLeft(e.dlc);
+      body += '<tr style="border-bottom:1px solid #fed7aa"><td style="padding:8px">'+e.name+'</td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td><td style="padding:8px;text-align:center;color:#f97316;font-weight:bold">'+d+'j</td></tr>';
+    });
+    body += '</table>';
+  }
+
+  if(cinq.length){
+    body += '<h3 style="color:#7c3aed;padding:10px 16px;margin:0;background:#f5f3ff">🟣 5 jours ou moins — ' + cinq.length + ' produit(s)</h3>';
+    body += '<table style="width:100%;border-collapse:collapse">';
+    body += '<tr style="background:#ede9fe"><th style="padding:8px;text-align:left">Produit</th><th style="padding:8px">Magasin</th><th style="padding:8px">DLC</th><th style="padding:8px">Jours restants</th></tr>';
+    cinq.forEach(function(e){
+      var d = daysLeft(e.dlc);
+      body += '<tr style="border-bottom:1px solid #ddd6fe"><td style="padding:8px">'+e.name+'</td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td><td style="padding:8px;text-align:center;color:#7c3aed;font-weight:bold">'+d+'j</td></tr>';
+    });
+    body += '</table>';
+  }
+
+  body += '<p style="padding:16px;color:#64748b;font-size:12px;border-top:1px solid #e2e8f0;margin-top:16px">Rapport genere automatiquement par l application Gestion DLC Agriberia - Mosaique - Medizia</p>';
+  body += '</div>';
+
+  // Envoyer via Brevo API
+  showToast('Envoi en cours...');
+  fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'api-key': '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'
+    },
+    body: JSON.stringify({
+      sender: { name: 'Gestion DLC', email: 'stephane.d@agriberia.fr' },
+      to: [{ email: email }],
+      subject: '[Gestion DLC Agriberia - Mosaique - Medizia] Rapport du ' + dateStr,
+      htmlContent: body
+    })
+  })
+  .then(function(r){
+    if(r.ok){
+      showToast('Rapport envoye a ' + email + ' !');
+    } else {
+      r.json().then(function(d){ showToast('Erreur : ' + (d.message||'inconnue')); });
+    }
+  })
+  .catch(function(){ showToast('Erreur reseau - verifiez votre connexion'); });
+}
+
+window.onload=function(){ init(); loadEmail(); };
 </script>
 </body>
 </html>
