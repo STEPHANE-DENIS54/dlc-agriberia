@@ -968,29 +968,21 @@ function sendReport(){
   body += '<p style="padding:16px;color:#64748b;font-size:12px;border-top:1px solid #e2e8f0;margin-top:16px">Rapport genere automatiquement par l application Gestion DLC Agriberia - Mosaique - Medizia</p>';
   body += '</div>';
 
-  // Envoyer via Brevo API
+  // Envoyer via EmailJS
   showToast('Envoi en cours...');
-  fetch('https://api.brevo.com/v3/smtp/email', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'api-key': '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'
-    },
-    body: JSON.stringify({
-      sender: { name: 'Gestion DLC', email: 'stephane.d@agriberia.fr' },
-      to: [{ email: email }],
-      subject: '[Gestion DLC Agriberia - Mosaique - Medizia] Rapport du ' + dateStr,
-      htmlContent: body
-    })
+  emailjs.init('BNHXZkUDwmWNtmPAz');
+  emailjs.send('service_8h7xux9', 'template_09m1q3r', {
+    to_email: email,
+    subject: '[Gestion DLC Agriberia - Mosaique - Medizia] Rapport du ' + dateStr,
+    html_content: body,
+    name: 'Gestion DLC'
   })
-  .then(function(r){
-    if(r.ok){
-      showToast('Rapport envoye a ' + email + ' !');
-    } else {
-      r.json().then(function(d){ showToast('Erreur : ' + (d.message||'inconnue')); });
-    }
+  .then(function(){
+    showToast('Rapport envoye a ' + email + ' !');
   })
-  .catch(function(){ showToast('Erreur reseau - verifiez votre connexion'); });
+  .catch(function(err){
+    showToast('Erreur envoi : ' + (err.text||JSON.stringify(err)));
+  });
 }
 
 window.onload=function(){ init(); loadEmail(); };
