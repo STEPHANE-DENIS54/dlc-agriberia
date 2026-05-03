@@ -161,7 +161,7 @@ input[type=date]:focus,select.sel:focus{outline:none;border-color:#1a3aff}
 .dlc-sheet h2{font-size:16px;margin-bottom:4px}
 .dlc-sub{font-size:12px;color:#94a3b8;font-family:monospace;margin-bottom:14px}
 .toast{position:fixed;top:82px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:9px 18px;border-radius:20px;font-size:13px;z-index:400;pointer-events:none;opacity:0;transition:opacity .3s;white-space:nowrap}
-.stats-cols{display:flex;gap:12px;margin-top:4px}
+.stats-cols{display:flex;gap:12px;margin-top:4px;align-items:flex-start}
 .stats-col{flex:1;min-width:0}
 .stats-col-title{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
 .store-check-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f1f5f9;cursor:pointer}
@@ -939,7 +939,7 @@ function sendReport(){
 
   // Recuperer magasins coches
   var checkedStores = stores.filter(function(s){
-    return localStorage.getItem('chk_'+s) !== 'false';
+    return localStorage.getItem('chk_'+s) === 'true';
   });
   var filteredEntries = entries.filter(function(e){ return checkedStores.indexOf(e.store) > -1; });
 
@@ -996,7 +996,7 @@ function sendReport(){
   emailjs.init('BNHXZkUDwmWNtmPAz');
   emailjs.send('service_rhwd9hg', 'template_09m1q3r', {
     to_email: email,
-    subject: 'Gestion DLC Agriberia - Mosaique - Medizia - Rapport du ' + dateStr.replace(/\//g, '/').replace(/&#x2F;/g, '/'),
+    subject: 'DLC Agriberia Rapport du ' + dateStr,
     html_content: body,
     name: 'Gestion DLC'
   })
@@ -1044,16 +1044,30 @@ function toggleStoreStat(storeName){
 function renderStoreCheckboxes(){
   var bar = document.getElementById('store-checkboxes'); if(!bar) return;
   if(!stores.length){ bar.innerHTML=''; return; }
-  var h='<p style="font-size:12px;color:#64748b;margin-bottom:6px">Choisissez les magasins a inclure dans le rapport :</p>';
-  stores.slice().sort(function(a,b){ return a.localeCompare(b,'fr'); }).forEach(function(s){
-    var checked = (localStorage.getItem('chk_'+s) !== 'false') ? 'checked' : '';
+  var sorted = stores.slice().sort(function(a,b){ return a.localeCompare(b,'fr'); });
+  var h='<p style="font-size:12px;color:#64748b;margin-bottom:8px">Cochez les magasins a inclure dans le rapport :</p>';
+  h+='<div style="display:flex;gap:8px;margin-bottom:10px">';
+  h+='<button class="btn btn-s" style="flex:1;margin-top:0;padding:8px;font-size:12px" onclick="checkAllStores(true)">✅ Tout cocher</button>';
+  h+='<button class="btn btn-s" style="flex:1;margin-top:0;padding:8px;font-size:12px" onclick="checkAllStores(false)">☐ Tout decocher</button>';
+  h+='</div>';
+  h+='<div style="display:flex;flex-wrap:wrap;gap:0">';
+  sorted.forEach(function(s){
+    var checked = (localStorage.getItem('chk_'+s) === 'true') ? 'checked' : '';
     var sid = escQ(s);
-    h+='<div class="store-check-item" onclick="toggleStoreCheck(\'' + sid + '\')">'
+    h+='<div class="store-check-item" style="width:50%" onclick="toggleStoreCheck(\'' + sid + '\')">'
       +'<input type="checkbox" id="chk_' + sid + '" ' + checked + ' onclick="event.stopPropagation();saveStoreCheck(\'' + sid + '\')">'
       +'<label class="store-check-label" for="chk_' + sid + '">🏪 ' + s + '</label>'
       +'</div>';
   });
+  h+='</div>';
   bar.innerHTML=h;
+}
+
+function checkAllStores(val){
+  stores.forEach(function(s){
+    localStorage.setItem('chk_'+s, val);
+  });
+  renderStoreCheckboxes();
 }
 
 function toggleStoreCheck(s){
