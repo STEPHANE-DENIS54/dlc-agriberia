@@ -602,10 +602,28 @@ function renderAide(){
   html+='<div class="stat-row"><span class="stat-label"><span class="stat-dot" style="background:#94a3b8"></span>Expires</span><span class="stat-val" style="color:#94a3b8">'+x+'</span></div>';
   if(Object.keys(bs).length){
     html+='<div class="stats-col-title" style="margin-top:12px">Magasins</div>';
+    html+='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">';
     Object.keys(bs).sort().forEach(function(s){
-      html+='<div class="stat-row"><span class="stat-label clickable-store" onclick="toggleStoreStat(\''+escQ(s)+'\')">🏪 '+s+'</span><span class="stat-val">'+bs[s]+'</span></div>';
-      html+='<div class="store-dlc-detail" id="stat-'+escQ(s)+'"></div>';
+      var se=entries.filter(function(e){ return e.store===s; });
+      var sr=0,so=0,sv=0,sk=0,sx=0;
+      se.forEach(function(e){
+        var d=daysLeft(e.dlc),c=aCls(d);
+        if(c==='cr')sr++; else if(c==='co')so++; else if(c==='cv')sv++; else if(c==='cx')sx++; else sk++;
+      });
+      html+='<button onclick="toggleStoreStat(''+escQ(s)+'')" id="btn-stat-'+escQ(s)+'" style="width:calc(50% - 3px);padding:8px 6px;border-radius:10px;border:2px solid #e2e8f0;background:#fff;font-size:11px;font-weight:600;color:#1e293b;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;box-shadow:0 1px 3px rgba(0,0,0,.07)">'
+        +'🏪 '+s
+        +'<span style="display:flex;gap:2px;align-items:center">'
+        +(sr?'<span style="width:15px;height:15px;border-radius:50%;background:#dc2626;display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:700">'+sr+'</span>':'')
+        +(so?'<span style="width:15px;height:15px;border-radius:50%;background:#f97316;display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:700">'+so+'</span>':'')
+        +(sv?'<span style="width:15px;height:15px;border-radius:50%;background:#7c3aed;display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:700">'+sv+'</span>':'')
+        +(sk?'<span style="width:15px;height:15px;border-radius:50%;background:#16a34a;display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:700">'+sk+'</span>':'')
+        +(sx?'<span style="width:15px;height:15px;border-radius:50%;background:#94a3b8;display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:700">'+sx+'</span>':'')
+        +'</span></button>';
+      html+='<div class="store-dlc-detail" id="stat-'+escQ(s)+'" style="width:100%"></div>';
     });
+    html+='</div>';
+  } else {
+    html+='<div style="font-size:12px;color:#94a3b8;padding:6px 0">Aucune donnee</div>';
   }
   html+='</div>';
 
@@ -629,6 +647,10 @@ function toggleStoreStat(storeName){
   var allDetails=document.querySelectorAll('.store-dlc-detail');
   allDetails.forEach(function(d){
     if(d.id!=='stat-'+escQ(storeName)) d.classList.remove('on');
+  });
+  // Reset all store stat buttons
+  document.querySelectorAll('[id^="btn-stat-"]').forEach(function(b){
+    b.style.background='#fff'; b.style.color='#1e293b'; b.style.borderColor='#e2e8f0';
   });
   var el=document.getElementById('stat-'+escQ(storeName));
   if(!el) return;
@@ -667,6 +689,8 @@ function toggleStoreStat(storeName){
   }
   el.innerHTML=h;
   el.classList.add('on');
+  var btn=document.getElementById('btn-stat-'+escQ(storeName));
+  if(btn){ btn.style.background='#1a3aff'; btn.style.color='#fff'; btn.style.borderColor='#1a3aff'; }
 }
 
 function setCatTab(c,btn){
