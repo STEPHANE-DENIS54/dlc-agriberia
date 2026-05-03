@@ -937,8 +937,7 @@ function sendReport(){
   var yyyy = today.getFullYear();
   var dateStr = dd + '-' + mm + '-' + yyyy;
 
-  // Trier les DLC urgentes
-  // Récupérer magasins cochés
+  // Recuperer magasins coches
   var checkedStores = stores.filter(function(s){
     return localStorage.getItem('chk_'+s) !== 'false';
   });
@@ -1018,7 +1017,7 @@ function toggleStoreStat(storeName){
   if(!el) return;
   if(el.classList.contains('on')){ el.classList.remove('on'); return; }
 
-  // Récupérer DLC de ce magasin groupées par catégorie
+  // Recuperer DLC de ce magasin par categorie
   var storeDLC = entries.filter(function(e){ return e.store===storeName; });
   var byCat = {};
   storeDLC.forEach(function(e){
@@ -1048,9 +1047,10 @@ function renderStoreCheckboxes(){
   var h='<p style="font-size:12px;color:#64748b;margin-bottom:6px">Choisissez les magasins a inclure dans le rapport :</p>';
   stores.slice().sort(function(a,b){ return a.localeCompare(b,'fr'); }).forEach(function(s){
     var checked = (localStorage.getItem('chk_'+s) !== 'false') ? 'checked' : '';
-    h+='<div class="store-check-item" onclick="toggleStoreCheck(''+escQ(s)+'')">'
-      +'<input type="checkbox" id="chk_'+escQ(s)+'" '+checked+' onclick="event.stopPropagation();saveStoreCheck(''+escQ(s)+'')">'
-      +'<label class="store-check-label" for="chk_'+escQ(s)+'">🏪 '+s+'</label>'
+    var sid = escQ(s);
+    h+='<div class="store-check-item" onclick="toggleStoreCheck(\'' + sid + '\')">'
+      +'<input type="checkbox" id="chk_' + sid + '" ' + checked + ' onclick="event.stopPropagation();saveStoreCheck(\'' + sid + '\')">'
+      +'<label class="store-check-label" for="chk_' + sid + '">🏪 ' + s + '</label>'
       +'</div>';
   });
   bar.innerHTML=h;
