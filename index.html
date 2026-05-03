@@ -307,6 +307,11 @@ textarea{font-family:-apple-system,BlinkMacSystemFont,sans-serif}
     <button class="btn btn-s" onclick="document.getElementById('import-file').click()" style="margin-top:8px">Importer des donnees</button>
     <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
   </div>
+  <div class="sset">
+    <h3>⚠️ Zone de danger</h3>
+    <p style="font-size:12px;color:#64748b;line-height:1.7;margin-bottom:12px">Supprime definitivement toutes vos donnees : magasins, DLC et produits personnalises.</p>
+    <button class="btn" style="background:#ef4444;color:#fff;margin-top:0" onclick="deleteAllData()">🗑️ Supprimer toutes les donnees</button>
+  </div>
 </div>
 
 <!-- OVERLAY MAGASIN -->
@@ -631,20 +636,34 @@ function toggleStoreStat(storeName){
   var storeDLC=entries.filter(function(e){ return e.store===storeName; });
   var byCat={};
   storeDLC.forEach(function(e){
-    if(!byCat[e.category]) byCat[e.category]=[];
-    byCat[e.category].push(e);
+    if(!byCat[e.category]) byCat[e.category]={total:0,r:0,o:0,v:0,k:0,x:0};
+    byCat[e.category].total++;
+    var d=daysLeft(e.dlc),c=aCls(d);
+    if(c==='cr') byCat[e.category].r++;
+    else if(c==='co') byCat[e.category].o++;
+    else if(c==='cv') byCat[e.category].v++;
+    else if(c==='cx') byCat[e.category].x++;
+    else byCat[e.category].k++;
   });
   var h='';
   if(!storeDLC.length){
-    h='<div style="font-size:12px;color:#94a3b8">Aucune DLC pour ce magasin</div>';
+    h='<div style="font-size:12px;color:#94a3b8;padding:4px 0">Aucune DLC pour ce magasin</div>';
   } else {
+    h='<table style="width:100%;border-collapse:collapse;font-size:11px">';
+    h+='<tr style="background:#f1f5f9"><td style="padding:4px 6px;font-weight:700">Categorie</td><td style="padding:4px;text-align:center;color:#dc2626">J</td><td style="padding:4px;text-align:center;color:#f97316">3j</td><td style="padding:4px;text-align:center;color:#7c3aed">5j</td><td style="padding:4px;text-align:center;color:#16a34a">OK</td><td style="padding:4px;text-align:center;color:#94a3b8">Exp</td><td style="padding:4px;text-align:center;font-weight:700">Tot</td></tr>';
     Object.keys(byCat).sort().forEach(function(cat){
-      h+='<div class="store-dlc-cat">🏷️ '+cat+' ('+byCat[cat].length+')</div>';
-      byCat[cat].sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); }).forEach(function(e){
-        var d=daysLeft(e.dlc),bc2=bCls(d),bt2=bTxt(d);
-        h+='<div class="store-dlc-item"><span style="flex:1;font-size:11px;margin-right:4px">'+e.name+'</span><span class="badge '+bc2+'" style="font-size:9px;padding:2px 5px;position:relative;top:0;right:0">'+bt2+'</span></div>';
-      });
+      var c=byCat[cat];
+      h+='<tr style="border-bottom:1px solid #f1f5f9">';
+      h+='<td style="padding:4px 6px">'+cat+'</td>';
+      h+='<td style="padding:4px;text-align:center;color:#dc2626;font-weight:'+(c.r?'700':'400')+'">'+c.r+'</td>';
+      h+='<td style="padding:4px;text-align:center;color:#f97316;font-weight:'+(c.o?'700':'400')+'">'+c.o+'</td>';
+      h+='<td style="padding:4px;text-align:center;color:#7c3aed;font-weight:'+(c.v?'700':'400')+'">'+c.v+'</td>';
+      h+='<td style="padding:4px;text-align:center;color:#16a34a;font-weight:'+(c.k?'700':'400')+'">'+c.k+'</td>';
+      h+='<td style="padding:4px;text-align:center;color:#94a3b8;font-weight:'+(c.x?'700':'400')+'">'+c.x+'</td>';
+      h+='<td style="padding:4px;text-align:center;font-weight:700">'+c.total+'</td>';
+      h+='</tr>';
     });
+    h+='</table>';
   }
   el.innerHTML=h;
   el.classList.add('on');
@@ -999,6 +1018,28 @@ function importData(event){
     event.target.value='';
   };
   reader.readAsText(file);
+}
+
+function deleteAllData(){
+  if(!confirm('Etes-vous sur de vouloir supprimer TOUTES les donnees de votre telephone ?')) return;
+  if(!confirm('ATTENTION ! Cette action est irreversible. Etes-vous VRAIMENT sur de vouloir tout supprimer ?')) return;
+  try {
+    localStorage.removeItem('dlc_s');
+    localStorage.removeItem('dlc_e');
+    localStorage.removeItem('dlc_custom');
+    localStorage.removeItem('dlc_email');
+    stores.forEach(function(s){ localStorage.removeItem('chk_'+s); });
+  } catch(e){}
+  stores = ['Magasin 1','Magasin 2','Magasin 3'];
+  entries = [];
+  homeChip = null;
+  homeStore = null;
+  persist();
+  fillStores();
+  renderStoreBtns();
+  renderHome();
+  renderCfg();
+  showToast('Toutes les donnees ont ete supprimees');
 }
 
 window.onload=function(){ init(); loadEmail(); renderStoreCheckboxes(); };
