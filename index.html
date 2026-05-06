@@ -177,7 +177,7 @@ textarea{font-family:-apple-system,BlinkMacSystemFont,sans-serif}
     <div class="chip chip-x" id="chip-x" onclick="toggleChip('x')"><b id="nx">0</b>Expires</div>
     <div class="chip chip-r" id="chip-r" onclick="toggleChip('r')"><b id="nr">0</b>Jour J</div>
     <div class="chip chip-o" id="chip-o" onclick="toggleChip('o')"><b id="no">0</b>3 jours</div>
-    <div class="chip chip-v" id="chip-v" onclick="toggleChip('v')"><b id="nv">0</b>5 jours</div>
+    <div class="chip chip-v" id="chip-v" onclick="toggleChip('v')"><b id="nv">0</b>7 jours</div>
     <div class="chip chip-g" id="chip-g" onclick="toggleChip('g')"><b id="nk">0</b>OK</div>
   </div>
   <div id="store-btns-bar"></div>
@@ -257,7 +257,7 @@ textarea{font-family:-apple-system,BlinkMacSystemFont,sans-serif}
     <h3>Legende des couleurs</h3>
     <div class="aide-item"><div class="aide-dot" style="background:#dc2626"></div><div class="aide-text"><strong>Rouge</strong> — Jour J : la DLC expire aujourd hui</div></div>
     <div class="aide-item"><div class="aide-dot" style="background:#f97316"></div><div class="aide-text"><strong>Orange</strong> — 3 jours ou moins avant la DLC</div></div>
-    <div class="aide-item"><div class="aide-dot" style="background:#7c3aed"></div><div class="aide-text"><strong>Violet</strong> — 5 jours ou moins avant la DLC</div></div>
+    <div class="aide-item"><div class="aide-dot" style="background:#7c3aed"></div><div class="aide-text"><strong>Violet</strong> — 7 jours ou moins avant la DLC</div></div>
     <div class="aide-item"><div class="aide-dot" style="background:#16a34a"></div><div class="aide-text"><strong>Vert</strong> — Produit OK, DLC lointaine</div></div>
     <div class="aide-item"><div class="aide-dot" style="background:#94a3b8"></div><div class="aide-text"><strong>Gris</strong> — DLC expiree (affichee jusqu a 15 jours apres)</div></div>
   </div>
@@ -291,6 +291,17 @@ textarea{font-family:-apple-system,BlinkMacSystemFont,sans-serif}
       <button class="btn btn-s" onclick="checkAllStores(false)">Tout decocher</button>
     </div>
     <div class="stores-check-wrap" id="store-checkboxes"></div>
+    <p style="font-size:12px;color:#64748b;margin-top:10px;margin-bottom:6px">Options supplementaires (facultatif) :</p>
+    <div style="display:flex;gap:10px;margin-bottom:8px">
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;cursor:pointer">
+        <input type="checkbox" id="chk-14j" style="width:18px;height:18px;accent-color:#1a3aff;cursor:pointer">
+        <span>📅 Inclure DLC 14 jours</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;cursor:pointer">
+        <input type="checkbox" id="chk-21j" style="width:18px;height:18px;accent-color:#1a3aff;cursor:pointer">
+        <span>📅 Inclure DLC 21 jours</span>
+      </label>
+    </div>
     <label class="lbl" style="clear:both;display:block;margin-top:10px">Message personnalise (facultatif)</label>
     <textarea id="report-message" placeholder="Ajoutez un message personnel..." style="width:100%;padding:11px;border:2px solid #e2e8f0;border-radius:10px;font-size:14px;background:#fff;color:#1e293b;margin-top:4px;min-height:80px;resize:vertical"></textarea>
     <button class="btn btn-s" onclick="sendReport()" style="margin-top:8px">Envoyer le rapport DLC maintenant</button>
@@ -428,13 +439,13 @@ function daysLeft(d){
   var b=new Date(d); b.setHours(0,0,0,0);
   return Math.round((b-a)/86400000);
 }
-function aCls(d){ if(d<0)return'cx'; if(d===0)return'cr'; if(d<=3)return'co'; if(d<=5)return'cv'; return''; }
-function bCls(d){ if(d<0)return'bx'; if(d===0)return'br'; if(d<=3)return'bo'; if(d<=5)return'bv'; return'bg'; }
+function aCls(d){ if(d<0)return'cx'; if(d===0)return'cr'; if(d<=3)return'co'; if(d<=7)return'cv'; return''; }
+function bCls(d){ if(d<0)return'bx'; if(d===0)return'br'; if(d<=3)return'bo'; if(d<=7)return'bv'; return'bg'; }
 function bTxt(d){
   if(d<0) return 'Expire '+Math.abs(d)+'j';
   if(d===0) return 'Auj. !';
   if(d<=3) return d+'j';
-  if(d<=5) return d+'j';
+  if(d<=7) return d+'j';
   return d+'j';
 }
 function fmtDate(s){ if(!s)return''; return new Date(s).toLocaleDateString('fr-FR'); }
@@ -600,7 +611,7 @@ function renderAide(){
   html+='<div class="stat-row"><span class="stat-label"><strong>Total</strong></span><span class="stat-val">'+total+'</span></div>';
   html+='<div class="stat-row"><span class="stat-label"><span class="stat-dot" style="background:#dc2626"></span>Jour J</span><span class="stat-val" style="color:#dc2626">'+r+'</span></div>';
   html+='<div class="stat-row"><span class="stat-label"><span class="stat-dot" style="background:#f97316"></span>3 jours</span><span class="stat-val" style="color:#f97316">'+o+'</span></div>';
-  html+='<div class="stat-row"><span class="stat-label"><span class="stat-dot" style="background:#7c3aed"></span>5 jours</span><span class="stat-val" style="color:#7c3aed">'+v+'</span></div>';
+  html+='<div class="stat-row"><span class="stat-label"><span class="stat-dot" style="background:#7c3aed"></span>7 jours</span><span class="stat-val" style="color:#7c3aed">'+v+'</span></div>';
   html+='<div class="stat-row"><span class="stat-label"><span class="stat-dot" style="background:#16a34a"></span>OK</span><span class="stat-val" style="color:#16a34a">'+k+'</span></div>';
   html+='<div class="stat-row"><span class="stat-label"><span class="stat-dot" style="background:#94a3b8"></span>Expires</span><span class="stat-val" style="color:#94a3b8">'+x+'</span></div>';
   html+='</div>';
@@ -969,7 +980,11 @@ function sendReport(){
   var jourJ=filteredEntries.filter(function(e){ return aCls(daysLeft(e.dlc))==='cr'; }).sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); });
   var trois=filteredEntries.filter(function(e){ return aCls(daysLeft(e.dlc))==='co'; }).sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); });
   var cinq=filteredEntries.filter(function(e){ return aCls(daysLeft(e.dlc))==='cv'; }).sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); });
-  if(!jourJ.length&&!trois.length&&!cinq.length){ showToast('Aucune DLC urgente a signaler !'); return; }
+  var incl14=document.getElementById('chk-14j')&&document.getElementById('chk-14j').checked;
+  var incl21=document.getElementById('chk-21j')&&document.getElementById('chk-21j').checked;
+  var quatorze=incl14?filteredEntries.filter(function(e){ var d=daysLeft(e.dlc); return d>7&&d<=14; }).sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); }):[];
+  var vingtun=incl21?filteredEntries.filter(function(e){ var d=daysLeft(e.dlc); return d>14&&d<=21; }).sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); }):[];
+  if(!jourJ.length&&!trois.length&&!cinq.length&&!quatorze.length&&!vingtun.length){ showToast('Aucune DLC urgente a signaler !'); return; }
   var msgPerso=document.getElementById('report-message')?document.getElementById('report-message').value.trim():'';
   var body='<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">';
   body+='<h2 style="background:#1e3a6e;color:white;padding:16px;margin:0">Rapport DLC - '+dateStr+'</h2>';
@@ -987,9 +1002,21 @@ function sendReport(){
     body+='</table>';
   }
   if(cinq.length){
-    body+='<h3 style="color:#7c3aed;padding:10px 16px;margin:0;background:#f5f3ff">5 jours ou moins - '+cinq.length+' produit(s)</h3>';
+    body+='<h3 style="color:#7c3aed;padding:10px 16px;margin:0;background:#f5f3ff">7 jours ou moins - '+cinq.length+' produit(s)</h3>';
     body+='<table style="width:100%;border-collapse:collapse"><tr style="background:#ede9fe"><th style="padding:8px;text-align:left">Produit</th><th style="padding:8px">Magasin</th><th style="padding:8px">DLC</th><th style="padding:8px">Jours</th></tr>';
     cinq.forEach(function(e){ var d=daysLeft(e.dlc); body+='<tr style="border-bottom:1px solid #ddd6fe"><td style="padding:8px">'+e.name+'</td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td><td style="padding:8px;text-align:center;color:#7c3aed;font-weight:bold">'+d+'j</td></tr>'; });
+    body+='</table>';
+  }
+  if(quatorze.length){
+    body+='<h3 style="color:#0284c7;padding:10px 16px;margin:0;background:#f0f9ff">📅 14 jours ou moins - '+quatorze.length+' produit(s)</h3>';
+    body+='<table style="width:100%;border-collapse:collapse"><tr style="background:#e0f2fe"><th style="padding:8px;text-align:left">Produit</th><th style="padding:8px">Magasin</th><th style="padding:8px">DLC</th><th style="padding:8px">Jours</th></tr>';
+    quatorze.forEach(function(e){ var d=daysLeft(e.dlc); body+='<tr style="border-bottom:1px solid #bae6fd"><td style="padding:8px">'+e.name+'</td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td><td style="padding:8px;text-align:center;color:#0284c7;font-weight:bold">'+d+'j</td></tr>'; });
+    body+='</table>';
+  }
+  if(vingtun.length){
+    body+='<h3 style="color:#7c3aed;padding:10px 16px;margin:0;background:#faf5ff">📅 21 jours ou moins - '+vingtun.length+' produit(s)</h3>';
+    body+='<table style="width:100%;border-collapse:collapse"><tr style="background:#ede9fe"><th style="padding:8px;text-align:left">Produit</th><th style="padding:8px">Magasin</th><th style="padding:8px">DLC</th><th style="padding:8px">Jours</th></tr>';
+    vingtun.forEach(function(e){ var d=daysLeft(e.dlc); body+='<tr style="border-bottom:1px solid #ddd6fe"><td style="padding:8px">'+e.name+'</td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td><td style="padding:8px;text-align:center;color:#7c3aed;font-weight:bold">'+d+'j</td></tr>'; });
     body+='</table>';
   }
   body+='<p style="padding:16px;color:#64748b;font-size:12px;border-top:1px solid #e2e8f0;margin-top:16px">Rapport genere par Application DLC Agriberia - Mosaique - Medizia</p>';
