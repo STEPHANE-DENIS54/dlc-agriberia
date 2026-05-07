@@ -291,15 +291,19 @@ textarea{font-family:-apple-system,BlinkMacSystemFont,sans-serif}
       <button class="btn btn-s" onclick="checkAllStores(false)">Tout decocher</button>
     </div>
     <div class="stores-check-wrap" id="store-checkboxes"></div>
-    <p style="font-size:12px;color:#64748b;margin-top:10px;margin-bottom:6px">Options supplementaires (facultatif) :</p>
-    <div style="display:flex;gap:10px;margin-bottom:8px">
-      <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;cursor:pointer">
-        <input type="checkbox" id="chk-14j" style="width:18px;height:18px;accent-color:#1a3aff;cursor:pointer">
-        <span>📅 Inclure DLC 14 jours</span>
+    <p style="font-size:12px;color:#64748b;margin-top:10px;margin-bottom:8px">Options supplementaires (facultatif) :</p>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px">
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;cursor:pointer">
+        <input type="radio" name="dlc-option" id="chk-0j" value="0" checked style="width:18px;height:18px;accent-color:#1a3aff;cursor:pointer">
+        <span>Aucune option supplementaire</span>
       </label>
-      <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;cursor:pointer">
-        <input type="checkbox" id="chk-21j" style="width:18px;height:18px;accent-color:#1a3aff;cursor:pointer">
-        <span>📅 Inclure DLC 21 jours</span>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;cursor:pointer">
+        <input type="radio" name="dlc-option" id="chk-14j" value="14" style="width:18px;height:18px;accent-color:#1a3aff;cursor:pointer">
+        <span>📅 Inclure DLC a 14 jours</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;cursor:pointer">
+        <input type="radio" name="dlc-option" id="chk-21j" value="21" style="width:18px;height:18px;accent-color:#1a3aff;cursor:pointer">
+        <span>📅 Inclure DLC a 21 jours</span>
       </label>
     </div>
     <label class="lbl" style="clear:both;display:block;margin-top:10px">Message personnalise (facultatif)</label>
@@ -685,18 +689,18 @@ function toggleStoreStat(storeName){
   if(!storeDLC.length){
     h='<div style="font-size:12px;color:#94a3b8;padding:4px 0">Aucune DLC pour ce magasin</div>';
   } else {
-    h='<table style="width:100%;border-collapse:collapse;font-size:11px">';
-    h+='<tr style="background:#f1f5f9"><td style="padding:4px 6px;font-weight:700">Categorie</td><td style="padding:4px;text-align:center;color:#dc2626">J</td><td style="padding:4px;text-align:center;color:#f97316">3j</td><td style="padding:4px;text-align:center;color:#7c3aed">5j</td><td style="padding:4px;text-align:center;color:#16a34a">OK</td><td style="padding:4px;text-align:center;color:#94a3b8">Exp</td><td style="padding:4px;text-align:center;font-weight:700">Tot</td></tr>';
+    h='<table style="width:100%;border-collapse:collapse;font-size:13px">';
+    h+='<tr style="background:#f1f5f9;font-size:13px"><td style="padding:6px 8px;font-weight:700">Categorie</td><td style="padding:6px;text-align:center;color:#dc2626;font-weight:700">J</td><td style="padding:6px;text-align:center;color:#f97316;font-weight:700">3j</td><td style="padding:6px;text-align:center;color:#7c3aed;font-weight:700">7j</td><td style="padding:6px;text-align:center;color:#16a34a;font-weight:700">OK</td><td style="padding:6px;text-align:center;color:#94a3b8;font-weight:700">Exp</td><td style="padding:6px;text-align:center;font-weight:700">Tot</td></tr>';
     Object.keys(byCat).sort().forEach(function(cat){
       var c=byCat[cat];
-      h+='<tr style="border-bottom:1px solid #f1f5f9">';
-      h+='<td style="padding:4px 6px">'+cat+'</td>';
-      h+='<td style="padding:4px;text-align:center;color:#dc2626;font-weight:'+(c.r?'700':'400')+'">'+c.r+'</td>';
-      h+='<td style="padding:4px;text-align:center;color:#f97316;font-weight:'+(c.o?'700':'400')+'">'+c.o+'</td>';
-      h+='<td style="padding:4px;text-align:center;color:#7c3aed;font-weight:'+(c.v?'700':'400')+'">'+c.v+'</td>';
-      h+='<td style="padding:4px;text-align:center;color:#16a34a;font-weight:'+(c.k?'700':'400')+'">'+c.k+'</td>';
-      h+='<td style="padding:4px;text-align:center;color:#94a3b8;font-weight:'+(c.x?'700':'400')+'">'+c.x+'</td>';
-      h+='<td style="padding:4px;text-align:center;font-weight:700">'+c.total+'</td>';
+      h+='<tr style="border-bottom:1px solid #f1f5f9;font-size:13px">';
+      h+='<td style="padding:6px 8px;font-weight:600">'+cat+'</td>';
+      h+='<td style="padding:6px;text-align:center;color:#dc2626;font-weight:'+(c.r?'700':'400')+'">'+c.r+'</td>';
+      h+='<td style="padding:6px;text-align:center;color:#f97316;font-weight:'+(c.o?'700':'400')+'">'+c.o+'</td>';
+      h+='<td style="padding:6px;text-align:center;color:#7c3aed;font-weight:'+(c.v?'700':'400')+'">'+c.v+'</td>';
+      h+='<td style="padding:6px;text-align:center;color:#16a34a;font-weight:'+(c.k?'700':'400')+'">'+c.k+'</td>';
+      h+='<td style="padding:6px;text-align:center;color:#94a3b8;font-weight:'+(c.x?'700':'400')+'">'+c.x+'</td>';
+      h+='<td style="padding:6px;text-align:center;font-weight:700">'+c.total+'</td>';
       h+='</tr>';
     });
     h+='</table>';
@@ -980,10 +984,11 @@ function sendReport(){
   var jourJ=filteredEntries.filter(function(e){ return aCls(daysLeft(e.dlc))==='cr'; }).sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); });
   var trois=filteredEntries.filter(function(e){ return aCls(daysLeft(e.dlc))==='co'; }).sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); });
   var cinq=filteredEntries.filter(function(e){ return aCls(daysLeft(e.dlc))==='cv'; }).sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); });
-  var incl14=document.getElementById('chk-14j')&&document.getElementById('chk-14j').checked;
-  var incl21=document.getElementById('chk-21j')&&document.getElementById('chk-21j').checked;
-  var quatorze=incl14?filteredEntries.filter(function(e){ var d=daysLeft(e.dlc); return d>7&&d<=14; }).sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); }):[];
-  var vingtun=incl21?filteredEntries.filter(function(e){ var d=daysLeft(e.dlc); return d>14&&d<=21; }).sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); }):[];
+  var dlcOption=0;
+  var radios=document.querySelectorAll('input[name="dlc-option"]');
+  radios.forEach(function(r){ if(r.checked) dlcOption=parseInt(r.value)||0; });
+  var quatorze=(dlcOption===14)?filteredEntries.filter(function(e){ var d=daysLeft(e.dlc); return d>7&&d<=14; }).sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); }):[];
+  var vingtun=(dlcOption===21)?filteredEntries.filter(function(e){ var d=daysLeft(e.dlc); return d>14&&d<=21; }).sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); }):[];
   if(!jourJ.length&&!trois.length&&!cinq.length&&!quatorze.length&&!vingtun.length){ showToast('Aucune DLC urgente a signaler !'); return; }
   var msgPerso=document.getElementById('report-message')?document.getElementById('report-message').value.trim():'';
   var body='<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">';
@@ -992,31 +997,31 @@ function sendReport(){
   if(jourJ.length){
     body+='<h3 style="color:#dc2626;padding:10px 16px;margin:0;background:#fef2f2">Jour J - '+jourJ.length+' produit(s)</h3>';
     body+='<table style="width:100%;border-collapse:collapse"><tr style="background:#fee2e2"><th style="padding:8px;text-align:left">Produit</th><th style="padding:8px">Magasin</th><th style="padding:8px">DLC</th></tr>';
-    jourJ.forEach(function(e){ body+='<tr style="border-bottom:1px solid #fecaca"><td style="padding:8px">'+e.name+'</td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center;color:#dc2626;font-weight:bold">'+fmtDate(e.dlc)+'</td></tr>'; });
+    jourJ.forEach(function(e){ body+='<tr style="border-bottom:1px solid #fecaca"><td style="padding:8px"><strong>'+e.name+'</strong><br><span style="font-size:11px;color:#64748b">EAN: '+e.ean+' | '+e.category+'</span></td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center;color:#dc2626;font-weight:bold">'+fmtDate(e.dlc)+'</td></tr>'; });
     body+='</table>';
   }
   if(trois.length){
     body+='<h3 style="color:#f97316;padding:10px 16px;margin:0;background:#fff7ed">3 jours ou moins - '+trois.length+' produit(s)</h3>';
     body+='<table style="width:100%;border-collapse:collapse"><tr style="background:#ffedd5"><th style="padding:8px;text-align:left">Produit</th><th style="padding:8px">Magasin</th><th style="padding:8px">DLC</th><th style="padding:8px">Jours</th></tr>';
-    trois.forEach(function(e){ var d=daysLeft(e.dlc); body+='<tr style="border-bottom:1px solid #fed7aa"><td style="padding:8px">'+e.name+'</td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td><td style="padding:8px;text-align:center;color:#f97316;font-weight:bold">'+d+'j</td></tr>'; });
+    trois.forEach(function(e){ var d=daysLeft(e.dlc); body+='<tr style="border-bottom:1px solid #fed7aa"><td style="padding:8px"><strong>'+e.name+'</strong><br><span style="font-size:11px;color:#64748b">EAN: '+e.ean+' | '+e.category+'</span></td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td><td style="padding:8px;text-align:center;color:#f97316;font-weight:bold">'+d+'j</td></tr>'; });
     body+='</table>';
   }
   if(cinq.length){
     body+='<h3 style="color:#7c3aed;padding:10px 16px;margin:0;background:#f5f3ff">7 jours ou moins - '+cinq.length+' produit(s)</h3>';
     body+='<table style="width:100%;border-collapse:collapse"><tr style="background:#ede9fe"><th style="padding:8px;text-align:left">Produit</th><th style="padding:8px">Magasin</th><th style="padding:8px">DLC</th><th style="padding:8px">Jours</th></tr>';
-    cinq.forEach(function(e){ var d=daysLeft(e.dlc); body+='<tr style="border-bottom:1px solid #ddd6fe"><td style="padding:8px">'+e.name+'</td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td><td style="padding:8px;text-align:center;color:#7c3aed;font-weight:bold">'+d+'j</td></tr>'; });
+    cinq.forEach(function(e){ var d=daysLeft(e.dlc); body+='<tr style="border-bottom:1px solid #ddd6fe"><td style="padding:8px"><strong>'+e.name+'</strong><br><span style="font-size:11px;color:#64748b">EAN: '+e.ean+' | '+e.category+'</span></td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td><td style="padding:8px;text-align:center;color:#7c3aed;font-weight:bold">'+d+'j</td></tr>'; });
     body+='</table>';
   }
   if(quatorze.length){
     body+='<h3 style="color:#0284c7;padding:10px 16px;margin:0;background:#f0f9ff">📅 14 jours ou moins - '+quatorze.length+' produit(s)</h3>';
     body+='<table style="width:100%;border-collapse:collapse"><tr style="background:#e0f2fe"><th style="padding:8px;text-align:left">Produit</th><th style="padding:8px">Magasin</th><th style="padding:8px">DLC</th><th style="padding:8px">Jours</th></tr>';
-    quatorze.forEach(function(e){ var d=daysLeft(e.dlc); body+='<tr style="border-bottom:1px solid #bae6fd"><td style="padding:8px">'+e.name+'</td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td><td style="padding:8px;text-align:center;color:#0284c7;font-weight:bold">'+d+'j</td></tr>'; });
+    quatorze.forEach(function(e){ var d=daysLeft(e.dlc); body+='<tr style="border-bottom:1px solid #bae6fd"><td style="padding:8px"><strong>'+e.name+'</strong><br><span style="font-size:11px;color:#64748b">EAN: '+e.ean+' | '+e.category+'</span></td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td><td style="padding:8px;text-align:center;color:#0284c7;font-weight:bold">'+d+'j</td></tr>'; });
     body+='</table>';
   }
   if(vingtun.length){
     body+='<h3 style="color:#7c3aed;padding:10px 16px;margin:0;background:#faf5ff">📅 21 jours ou moins - '+vingtun.length+' produit(s)</h3>';
     body+='<table style="width:100%;border-collapse:collapse"><tr style="background:#ede9fe"><th style="padding:8px;text-align:left">Produit</th><th style="padding:8px">Magasin</th><th style="padding:8px">DLC</th><th style="padding:8px">Jours</th></tr>';
-    vingtun.forEach(function(e){ var d=daysLeft(e.dlc); body+='<tr style="border-bottom:1px solid #ddd6fe"><td style="padding:8px">'+e.name+'</td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td><td style="padding:8px;text-align:center;color:#7c3aed;font-weight:bold">'+d+'j</td></tr>'; });
+    vingtun.forEach(function(e){ var d=daysLeft(e.dlc); body+='<tr style="border-bottom:1px solid #ddd6fe"><td style="padding:8px"><strong>'+e.name+'</strong><br><span style="font-size:11px;color:#64748b">EAN: '+e.ean+' | '+e.category+'</span></td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td><td style="padding:8px;text-align:center;color:#7c3aed;font-weight:bold">'+d+'j</td></tr>'; });
     body+='</table>';
   }
   body+='<p style="padding:16px;color:#64748b;font-size:12px;border-top:1px solid #e2e8f0;margin-top:16px">Rapport genere par Application DLC Agriberia - Mosaique - Medizia</p>';
