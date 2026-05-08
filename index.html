@@ -991,46 +991,52 @@ function sendReport(){
   var vingtun=(dlcOption===21)?filteredEntries.filter(function(e){ var d=daysLeft(e.dlc); return d>14&&d<=21; }).sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); }):[];
   if(!jourJ.length&&!trois.length&&!cinq.length&&!quatorze.length&&!vingtun.length){ showToast('Aucune DLC urgente a signaler !'); return; }
   var msgPerso=document.getElementById('report-message')?document.getElementById('report-message').value.trim():'';
+  // Couleurs par magasin
+  var storeColorsBg=['#f1f5f9','#f0fdf4','#fff7ed','#fdf4ff','#fef9c3','#fce7f3','#ecfeff','#fef2f2'];
+  var storeColorsBorder=['#1e3a6e','#166534','#9a3412','#6b21a8','#854d0e','#9d174d','#164e63','#991b1b'];
+  var storeColorMap={};
+  checkedStores.slice().sort().forEach(function(s,i){
+    storeColorMap[s]={bg:storeColorsBg[i%storeColorsBg.length],border:storeColorsBorder[i%storeColorsBorder.length]};
+  });
+
   var body='<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">';
-  body+='<h2 style="background:#1e3a6e;color:white;padding:16px;margin:0">Rapport DLC - '+dateStr+'</h2>';
-  if(msgPerso){ body+='<div style="background:#f0f9ff;border-left:4px solid #1a3aff;padding:12px 16px;margin:0;font-size:14px;color:#1e293b"><strong>Message :</strong> '+msgPerso+'</div>'; }
-  if(jourJ.length){
-    body+='<h3 style="color:#dc2626;padding:10px 16px;margin:0;background:#fef2f2">Jour J - '+jourJ.length+' produit(s)</h3>';
-    body+='<table style="width:100%;border-collapse:collapse"><tr style="background:#fee2e2"><th style="padding:8px;text-align:left">Produit</th><th style="padding:8px">Magasin</th><th style="padding:8px">DLC</th></tr>';
-    jourJ.forEach(function(e){ body+='<tr style="border-bottom:1px solid #fecaca"><td style="padding:8px"><strong>'+e.name+'</strong><br><span style="font-size:11px;color:#64748b">EAN: '+e.ean+' | '+e.category+'</span></td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center;color:#dc2626;font-weight:bold">'+fmtDate(e.dlc)+'</td></tr>'; });
+  body+='<h2 style="background:#1e3a6e;color:white;padding:16px;margin:0">DLC A VENIR AU '+dateStr+'</h2>';
+  if(msgPerso){ body+='<div style="background:#f0f9ff;border-left:4px solid #1a3aff;padding:12px 16px;font-size:14px;color:#1e293b"><strong>Message :</strong> '+msgPerso+'</div>'; }
+
+  // Organiser par magasin
+  checkedStores.slice().sort().forEach(function(store){
+    var col=storeColorMap[store]||{bg:'#f8fafc',border:'#1e3a6e'};
+    var maxDays=(dlcOption===14)?14:(dlcOption===21)?21:7;
+    var storeProduits=filteredEntries.filter(function(e){
+      return e.store===store && daysLeft(e.dlc)>=0 && daysLeft(e.dlc)<=maxDays;
+    }).sort(function(a,b){ return daysLeft(a.dlc)-daysLeft(b.dlc); });
+    if(!storeProduits.length) return;
+
+    body+='<div style="margin-top:16px;border:2px solid '+col.border+';border-radius:8px;overflow:hidden">';
+    body+='<div style="background:'+col.border+';color:white;padding:10px 16px;font-size:15px;font-weight:700">🏪 '+store+'</div>';
+    body+='<table style="width:100%;border-collapse:collapse;background:'+col.bg+'">';
+    body+='<tr style="background:rgba(0,0,0,0.05)"><th style="padding:8px;text-align:left">Produit</th><th style="padding:8px">DLC</th><th style="padding:8px">Jours</th></tr>';
+    storeProduits.forEach(function(e){
+      var d=daysLeft(e.dlc);
+      var urgColor=d===0?'#dc2626':d<=3?'#f97316':d<=7?'#7c3aed':d<=14?'#0284c7':'#6b21a8';
+      var urgLabel=d===0?'Jour J':d+'j';
+      body+='<tr style="border-bottom:1px solid rgba(0,0,0,0.08)">';
+      body+='<td style="padding:8px"><strong>'+e.name+'</strong><br><span style="font-size:11px;color:#64748b">EAN: '+e.ean+' | '+e.category+'</span></td>';
+      body+='<td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td>';
+      body+='<td style="padding:8px;text-align:center;color:'+urgColor+';font-weight:bold">'+urgLabel+'</td>';
+      body+='</tr>';
+    });
     body+='</table>';
-  }
-  if(trois.length){
-    body+='<h3 style="color:#f97316;padding:10px 16px;margin:0;background:#fff7ed">3 jours ou moins - '+trois.length+' produit(s)</h3>';
-    body+='<table style="width:100%;border-collapse:collapse"><tr style="background:#ffedd5"><th style="padding:8px;text-align:left">Produit</th><th style="padding:8px">Magasin</th><th style="padding:8px">DLC</th><th style="padding:8px">Jours</th></tr>';
-    trois.forEach(function(e){ var d=daysLeft(e.dlc); body+='<tr style="border-bottom:1px solid #fed7aa"><td style="padding:8px"><strong>'+e.name+'</strong><br><span style="font-size:11px;color:#64748b">EAN: '+e.ean+' | '+e.category+'</span></td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td><td style="padding:8px;text-align:center;color:#f97316;font-weight:bold">'+d+'j</td></tr>'; });
-    body+='</table>';
-  }
-  if(cinq.length){
-    body+='<h3 style="color:#7c3aed;padding:10px 16px;margin:0;background:#f5f3ff">7 jours ou moins - '+cinq.length+' produit(s)</h3>';
-    body+='<table style="width:100%;border-collapse:collapse"><tr style="background:#ede9fe"><th style="padding:8px;text-align:left">Produit</th><th style="padding:8px">Magasin</th><th style="padding:8px">DLC</th><th style="padding:8px">Jours</th></tr>';
-    cinq.forEach(function(e){ var d=daysLeft(e.dlc); body+='<tr style="border-bottom:1px solid #ddd6fe"><td style="padding:8px"><strong>'+e.name+'</strong><br><span style="font-size:11px;color:#64748b">EAN: '+e.ean+' | '+e.category+'</span></td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td><td style="padding:8px;text-align:center;color:#7c3aed;font-weight:bold">'+d+'j</td></tr>'; });
-    body+='</table>';
-  }
-  if(quatorze.length){
-    body+='<h3 style="color:#0284c7;padding:10px 16px;margin:0;background:#f0f9ff">📅 14 jours ou moins - '+quatorze.length+' produit(s)</h3>';
-    body+='<table style="width:100%;border-collapse:collapse"><tr style="background:#e0f2fe"><th style="padding:8px;text-align:left">Produit</th><th style="padding:8px">Magasin</th><th style="padding:8px">DLC</th><th style="padding:8px">Jours</th></tr>';
-    quatorze.forEach(function(e){ var d=daysLeft(e.dlc); body+='<tr style="border-bottom:1px solid #bae6fd"><td style="padding:8px"><strong>'+e.name+'</strong><br><span style="font-size:11px;color:#64748b">EAN: '+e.ean+' | '+e.category+'</span></td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td><td style="padding:8px;text-align:center;color:#0284c7;font-weight:bold">'+d+'j</td></tr>'; });
-    body+='</table>';
-  }
-  if(vingtun.length){
-    body+='<h3 style="color:#7c3aed;padding:10px 16px;margin:0;background:#faf5ff">📅 21 jours ou moins - '+vingtun.length+' produit(s)</h3>';
-    body+='<table style="width:100%;border-collapse:collapse"><tr style="background:#ede9fe"><th style="padding:8px;text-align:left">Produit</th><th style="padding:8px">Magasin</th><th style="padding:8px">DLC</th><th style="padding:8px">Jours</th></tr>';
-    vingtun.forEach(function(e){ var d=daysLeft(e.dlc); body+='<tr style="border-bottom:1px solid #ddd6fe"><td style="padding:8px"><strong>'+e.name+'</strong><br><span style="font-size:11px;color:#64748b">EAN: '+e.ean+' | '+e.category+'</span></td><td style="padding:8px;text-align:center">'+e.store+'</td><td style="padding:8px;text-align:center">'+fmtDate(e.dlc)+'</td><td style="padding:8px;text-align:center;color:#7c3aed;font-weight:bold">'+d+'j</td></tr>'; });
-    body+='</table>';
-  }
+    body+='</div>';
+  });
+
   body+='<p style="padding:16px;color:#64748b;font-size:12px;border-top:1px solid #e2e8f0;margin-top:16px">Rapport genere par Application DLC Agriberia - Mosaique - Medizia</p>';
   body+='</div>';
   showToast('Envoi en cours...');
   emailjs.init('BNHXZkUDwmWNtmPAz');
   emailjs.send('service_rhwd9hg','template_09m1q3r',{
     to_email:email,
-    subject:'DLC Agriberia Rapport du '+dateStr,
+    subject:'Application DLC Agriberia',
     html_content:body,
     name:'Application DLC'
   })
